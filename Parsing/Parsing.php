@@ -1,7 +1,5 @@
 <?php
 require 'phpQuery-onefile.php';
-//url сайта
-// $html = file_get_contents('');
 
 $html = '<p><b>Строительные хомутовые</b> леса на рынке имеют такое же большое распространение, как и прочие аналоги данного товара. В каталоге нашей компании представлено большое количество товаров в данной <span class="decor" title="Категория товара">категории</span>, вследствие чего есть возможность подобрать такой вариант, который будет максимально отвечать требованиям потенциального покупателя.</b>
 
@@ -11,6 +9,9 @@ $html = '<p><b>Строительные хомутовые</b> леса на р�
 
 <p>При необходимости можно будет получить помощь и консультирование от специалиста компании в вопросах, которые имеют непосредственное отношение к выбору подходящего товара, а также к оформлению заказа на его приобретение.<noindex> А с какой целью вообще применяются хомуторвые леса?</noindex> И из чего они состоят?</p>';
 
+
+//url сайта
+// $html = file_get_contents('');
 //Исключаемые слова, заполняемые пользователем
 $arrayBadWords = [
 	'строительные',
@@ -21,7 +22,6 @@ $arrayBadWords = [
 	'и',
 	''
 ];
-
 
 
 class Result
@@ -39,21 +39,8 @@ class Result
 		$entry->find('noindex')->remove();
 		$dataText = pq($entry)->text();
 
-
-		// $entry = $doc->find("");
-		// $dataHtml = pq($entry)->html();
-		// preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
-		// foreach ($mas as $value) {
-		// 	$mas1[] = implode(" ", $value);
-		// 	$matches = implode(" ", $mas1);
-		// }
-		// $matches = preg_replace('#(title|alt)#', ' ', $matches);
-		// $dataHtml = $matches;
-
-
 		$data = $dataText;
 		$this->data = $data;
-
 		return print_r($this->strToArray($this->badWords));
 	}
 
@@ -66,22 +53,9 @@ class Result
 		$entry = $doc->find("");
 		$dataText = pq($entry)->text();
 
-
-		// $entry = $doc->find("");
-		// $dataHtml = pq($entry)->html();
-		// preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
-		// foreach ($mas as $value) {
-		// 	$mas1[] = implode(" ", $value);
-		// 	$matches = implode(" ", $mas1);
-		// }
-		// $matches = preg_replace('#(title|alt)#', ' ', $matches);
-		// $dataHtml = $matches;
-
-
 		$data = $dataText;
 		$this->data = $data;
-
-		return print_r($this->strToArray($this->badWords));
+		return ($this->strToArray($this->badWords));
 	}
 
 
@@ -89,10 +63,6 @@ class Result
 	public function getResult_3()
 	{
 		$doc = phpQuery::newDocument($this->text);
-
-		// $entry = $doc->find("");
-		// $dataText = pq($entry)->text();
-
 
 		$entry = $doc->find("");
 		$dataHtml = pq($entry)->html();
@@ -104,11 +74,9 @@ class Result
 		$matches = preg_replace('#(title|alt)#', ' ', $matches);
 		$dataHtml = $matches;
 
-
 		$data = $dataHtml;
 		$this->data = $data;
-
-		return print_r($this->strToArray($this->badWords));
+		return ($this->strToArray($this->badWords));
 	}
 
 
@@ -133,8 +101,7 @@ class Result
 
 		$data = $dataText . $dataHtml;
 		$this->data = $data;
-
-		return print_r($this->strToArray($this->badWords));
+		return ($this->strToArray($this->badWords));
 	}
 
 	//$result_5 - Учитывать все слова без тегов, в том числе из title= и alt=, не учитывать текст внутри тега <noindex></noindex>
@@ -158,7 +125,7 @@ class Result
 
 		$data = $dataText . $dataHtml;
 		$this->data = $data;
-		return print_r($this->strToArray($this->badWords));
+		return ($this->strToArray($this->badWords));
 	}
 
 
@@ -195,8 +162,10 @@ $parsing->badWords = $arrayBadWords;
 $parsing->text = $html;
 
 
-// $result_1 = $parsing->getResult_1();
-// $result_2 = $parsing->getResult_2();
-// $result_3 = $parsing->getResult_3();
-// $result_4 = $parsing->getResult_4();
+$result_1 = $parsing->getResult_1();
+$result_2 = $parsing->getResult_2();
+$result_3 = $parsing->getResult_3();
+$result_4 = $parsing->getResult_4();
 $result_5 = $parsing->getResult_5();
+
+print_r(result_1);
