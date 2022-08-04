@@ -1,31 +1,4 @@
 <?php
-
-//$html - кусок html с текстом из парсинга;
-//$arrayBadWords - исключаемые слова, заполняемые пользователем;
-//
-//Нужно обработать $text. Сформировать массивы, который будет содержать встречаемые слова с их количеством в тексте, отсортировать по количеству
-//Нужно всегда исключать слова или словосочетания из массива $arrayBadWords при формировании итоговых результатов, их там быть не должно.
-// 
-//$result_1 - Учитывать все слова без тегов, но без значений внутри title= и alt=
-//$result_2 - Учитывать все слова без тегов, в том числе контент из title= и alt=
-//$result_3 - Учитывать словесный контент только из внутренности title= и alt= без остального текста
-//$result_4 - Учитывать все слова без тегов, в том числе из title= и alt=, не учитывать текст внутри тега <noindex></noindex>
-//$result_5 - Учитывать все слова без тегов, но без значений внутри title= и alt=, не учитывать текст внутри тега <noindex></noindex>
-// 
-//Примерный вид результатов (ключ - количество встречаемости, значение - слово):
-// 
-//$result_N = [
-//2 => 'применяются'
-//3 => 'как'
-//4 => 'леса'
-//...
-//];
-// 
-// 
-?>
-
-
-<?php
 require 'phpQuery-onefile.php';
 //url сайта
 // $html = file_get_contents('');
@@ -54,25 +27,149 @@ $arrayBadWords = [
 class Result
 {
 	public $data;
-	public function getText($text, $result)
+	public $badWords;
+
+
+	//$result_1 - Учитывать все слова без тегов, но без значений внутри title= и alt=, не учитывать текст внутри тега <noindex></noindex>
+	public function getResult_1()
 	{
-		$doc = phpQuery::newDocument($text);
-		//Считывание текста
-		if ($result == '2') {
-			$entry = $doc->find("");
-			$data['text'] = pq($entry)->text();
-			$this->data = $data;
-		} else
-			echo '13';
+		$doc = phpQuery::newDocument($this->text);
+
+		$entry = $doc->find("");
+		$entry->find('noindex')->remove();
+		$dataText = pq($entry)->text();
+
+
+		// $entry = $doc->find("");
+		// $dataHtml = pq($entry)->html();
+		// preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
+		// foreach ($mas as $value) {
+		// 	$mas1[] = implode(" ", $value);
+		// 	$matches = implode(" ", $mas1);
+		// }
+		// $matches = preg_replace('#(title|alt)#', ' ', $matches);
+		// $dataHtml = $matches;
+
+
+		$data = $dataText;
+		$this->data = $data;
+
+		return print_r($this->strToArray($this->badWords));
 	}
+
+
+	//$result_2 - Учитывать все слова без тегов, но без значений внутри title= и alt=
+	public function getResult_2()
+	{
+		$doc = phpQuery::newDocument($this->text);
+
+		$entry = $doc->find("");
+		$dataText = pq($entry)->text();
+
+
+		// $entry = $doc->find("");
+		// $dataHtml = pq($entry)->html();
+		// preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
+		// foreach ($mas as $value) {
+		// 	$mas1[] = implode(" ", $value);
+		// 	$matches = implode(" ", $mas1);
+		// }
+		// $matches = preg_replace('#(title|alt)#', ' ', $matches);
+		// $dataHtml = $matches;
+
+
+		$data = $dataText;
+		$this->data = $data;
+
+		return print_r($this->strToArray($this->badWords));
+	}
+
+
+	//$result_3 - Учитывать словесный контент только из внутренности title= и alt= без остального текста
+	public function getResult_3()
+	{
+		$doc = phpQuery::newDocument($this->text);
+
+		// $entry = $doc->find("");
+		// $dataText = pq($entry)->text();
+
+
+		$entry = $doc->find("");
+		$dataHtml = pq($entry)->html();
+		preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
+		foreach ($mas as $value) {
+			$mas1[] = implode(" ", $value);
+			$matches = implode(" ", $mas1);
+		}
+		$matches = preg_replace('#(title|alt)#', ' ', $matches);
+		$dataHtml = $matches;
+
+
+		$data = $dataHtml;
+		$this->data = $data;
+
+		return print_r($this->strToArray($this->badWords));
+	}
+
+
+
+	// $result_4 - Учитывать все слова без тегов, в том числе контент из title= и alt=
+	public function getResult_4()
+	{
+		$doc = phpQuery::newDocument($this->text);
+
+		$entry = $doc->find("");
+		$dataText = pq($entry)->text();
+
+		$entry = $doc->find("");
+		$dataHtml = pq($entry)->html();
+		preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
+		foreach ($mas as $value) {
+			$mas1[] = implode(" ", $value);
+			$matches = implode(" ", $mas1);
+		}
+		$matches = preg_replace('#(title|alt)#', ' ', $matches);
+		$dataHtml = $matches;
+
+		$data = $dataText . $dataHtml;
+		$this->data = $data;
+
+		return print_r($this->strToArray($this->badWords));
+	}
+
+	//$result_5 - Учитывать все слова без тегов, в том числе из title= и alt=, не учитывать текст внутри тега <noindex></noindex>
+	public function getResult_5()
+	{
+		$doc = phpQuery::newDocument($this->text);
+
+		$entry = $doc->find("");
+		$entry->find('noindex')->remove();
+		$dataText = pq($entry)->text();
+
+		$entry = $doc->find("");
+		$dataHtml = pq($entry)->html();
+		preg_match_all("#(title|alt)=[\"'][a-zA-Za-яА-Я0-9 ]*[\"']#", $dataHtml,  $mas);
+		foreach ($mas as $value) {
+			$mas1[] = implode(" ", $value);
+			$matches = implode(" ", $mas1);
+		}
+		$matches = preg_replace('#(title|alt)#', ' ', $matches);
+		$dataHtml = $matches;
+
+		$data = $dataText . $dataHtml;
+		$this->data = $data;
+		return print_r($this->strToArray($this->badWords));
+	}
+
 
 
 	public function strToArray($badWords)
 	{
+
 		$data = $this->data;
+
 		//Удаление знаков препинания
 		$data = preg_replace('#[^a-zA-Za-яА-Я0-9]#', ' ', $data);
-
 		//Преобразование str в array
 		$data = explode(" ", $data);
 		//Преобразование значений массива в нижний регистр
@@ -94,22 +191,12 @@ class Result
 
 
 $parsing = new Result();
-//$result_1 - Учитывать все слова без тегов, но без значений внутри title= и alt=, не учитывать текст внутри тега <noindex></noindex>
-//$result_2 - Учитывать все слова без тегов, в том числе контент из title= и alt=
-//$result_3 - Учитывать словесный контент только из внутренности title= и alt= без остального текста
-//$result_4 - Учитывать все слова без тегов, в том числе из title= и alt=, не учитывать текст внутри тега <noindex></noindex>
-//$result_5 - Учитывать все слова без тегов, но без значений внутри title= и alt=
-$result_1 = '1';
-$result_2 = '2';
-$result_3 = '3';
-$result_4 = '4';
-$result_5 = '5';
-$parsing->getText($html, $result_1);
-print_r($parsing->strToArray($arrayBadWords));
+$parsing->badWords = $arrayBadWords;
+$parsing->text = $html;
 
 
-
-
-class Result_1 extends Result
-{
-}
+// $result_1 = $parsing->getResult_1();
+// $result_2 = $parsing->getResult_2();
+// $result_3 = $parsing->getResult_3();
+// $result_4 = $parsing->getResult_4();
+$result_5 = $parsing->getResult_5();
